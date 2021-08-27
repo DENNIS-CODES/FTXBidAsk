@@ -1,0 +1,2 @@
+success,name,enabled,postOnly,priceIncrement,sizeIncrement,minProvideSize,last,bid,ask,price,type,baseCurrency,quoteCurrency,underlying,restricted,highLeverageFeeExempt,change1h,change24h,changeBod,quoteVolume24h,volumeUsd24h
+true,BTC/USD,true,false,1,0.0001,0.0001,46774,46778,46779,46778,spot,BTC,USD,null,false,true,-0.009528245955788939,-0.023831385642737898,-0.00391806141135386,633094634.7467,633094634.7467
