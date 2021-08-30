@@ -3,13 +3,13 @@ import { schedule } from 'node-cron'
 import * as fs from 'fs'
 import { GoogleSheet } from "./excel";
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
-
+require('dotenv').config()
 const ExcelJS = require('exceljs');
 // require('dotenv').config();
 
 const writeFile = fs.writeFile
 
-let CHK_INTERVAL = 1
+let CHK_INTERVAL = 10
 let symbols = [
     'BTC/USD',
     'BTC-PERP'
@@ -19,7 +19,7 @@ let symbols = [
 let sheet6: GoogleSpreadsheetWorksheet | undefined
 let spread_live!: object;
 
-let doc_id: string = '1JBKkv0oT8K2qIND9V5yyhBnqQzbzKZ2H8XxGOBnFcRA'
+let doc_id: string = '1rH4D6yIB9NRNZDM5z_1keUECn62casZzURDdKpUfUuw'
 
 let doc = new GoogleSpreadsheet(doc_id)
 
@@ -36,7 +36,12 @@ let market_data = async () => {
     await doc.useServiceAccountAuth({
         client_email: process.env.GOOGLE_GMAIL!,
         private_key: process.env.GOOGLE_KEY!
+    }).catch((err) => {
+        console.log('Error: ', err );
+        
     })
+    
+    
 
     await doc.loadInfo();
 
@@ -57,7 +62,7 @@ let market_data = async () => {
 
     await sheet6.loadCells()
 
-    let b2 = sheet6?.getCellByA1('B2')
+    let b2 = sheet6?.getCellByA1('B2')  
     let b3 = sheet6?.getCellByA1('B3')
     let c2 = sheet6?.getCellByA1('C2')
     let c3 = sheet6?.getCellByA1('C3')
@@ -68,32 +73,21 @@ let market_data = async () => {
             try {
                 let response = await axios({
                     method: "GET",
-                    url: `https://ftx.com/api/markets/${symbols}`,
-                    params: {
-                        symbol: `${coins}`,
-                    }
+                    url: `https://ftx.com/api/markets/${coins}`,
+                    // params: {
+                    //     symbol: `${coins}`,
+                    // }
                 })
-    // for (let i = 0; i < TOKENS.length; i++) {
-    //     let candle = TOKENS[i]
-    //     schedule(`*/${CHK_INTERVAL} * * * * *`, async () => {
-    //        // console.log("running a task every 10 second")
-    //         let response = await axios({
-    //             method: 'GET',
-    //             url: `https://ftx.com/api/markets/${candle}`,
-    //             // headers: {
-    //             //     'X-FTX-Key': process.env.API_KEY
-    //             // }
+                console.log(response.data);
 
-    //         })
-    //         // console.log(response.data);
 
             let idata = response.data.result
 
-                const askPrice = idata[0].ask_price
-                const bidPrice = idata[0].bid_price
+                const askPrice = idata.ask
+                const bidPrice = idata.bid
                 const timestamp = (await response).data.time_now
 
-                // console.log(`${bidPrice} :${askPrice} : ${timestamp}`);
+                console.log(`${bidPrice} :${askPrice} : ${timestamp}`);
 
                 let sheetData = [
                     `${bidPrice}`,
@@ -101,22 +95,22 @@ let market_data = async () => {
                     `${new Date(timestamp * 1000).toUTCString()}`,
                 ]
 
-                // console.log('pricee: ', coins == 'BTCUSD', coins)
-                if (coins == 'BTCUSD') {
+                console.log('price: ', coins == 'BTCUSD', coins)
+                if (coins == 'BTC/USD') {
                     ask1 = askPrice
                     bid1 = bidPrice
 
                     gs.insertTo1(sheetData)
-                    // console.log('askPrice', ask1)
+                    console.log('askPrice1', ask1)
                 }
-                if (coins == 'BTCUSDT') {
+                if (coins == 'BTC-PERP') {
                     ask2 = askPrice
                     bid2 = bidPrice
 
-                    // console.log('bidPrice2', bid2)
+                    console.log('bidPrice2', bid2)
                     gs.insertTo2(sheetData)
                 }
-                // console.log('askPrice1', ask1)
+                console.log('bidPrice2', bid2)
                 let shortSpread = (bid1 - ask2)
                 let longSpread = (ask1 - bid2)
 
@@ -156,7 +150,8 @@ let market_data = async () => {
                 ]
 
             } catch (error) {
-                throw new Error;
+                console.log(error);
+                
 
             }
 

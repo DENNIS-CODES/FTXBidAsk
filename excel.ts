@@ -1,5 +1,5 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
-
+require('dotenv').config()
 if (!process.env.GOOGLE_KEY && !process.env.GOOGLE_GMAIL) {
     `GOOGLE_KEY && GOOGLE_GMAIL must be defined in your .env file`
 }
@@ -13,7 +13,7 @@ export class GoogleSheet {
     sheet2: GoogleSpreadsheetWorksheet | undefined
     sheet3: GoogleSpreadsheetWorksheet | undefined
     sheet4: GoogleSpreadsheetWorksheet | undefined
-    sheet6: GoogleSpreadsheetWorksheet | undefined
+    sheet5: GoogleSpreadsheetWorksheet | undefined
 
     b2: GoogleSpreadsheetCell | undefined
     b3: GoogleSpreadsheetCell | undefined
@@ -43,7 +43,6 @@ export class GoogleSheet {
         }
 
         this.spread_live = {
-            "Contract": "contract",
             "Long Spread": 'longSpread',
             "Short Spread": 'shortSpread'
         }
@@ -61,7 +60,7 @@ export class GoogleSheet {
         this.sheet2 = this.doc.sheetsByIndex[1]
         this.sheet3 = this.doc.sheetsByIndex[2]
         this.sheet4 = this.doc.sheetsByIndex[3]
-        this.sheet6 = this.doc.sheetsByIndex[5]
+        this.sheet5 = this.doc.sheetsByIndex[5]
 
     
 
@@ -80,7 +79,7 @@ export class GoogleSheet {
 
         this.sheet3?.setHeaderRow(Object.keys(this.spread_header_to_key))
         this.sheet4?.setHeaderRow(Object.keys(this.spread_header_to_key))
-        this.sheet6?.setHeaderRow(Object.keys(this.spread_live))
+        this.sheet5?.setHeaderRow(Object.keys(this.spread_live))
     }
 
     insertTo1 = async (record: any[]) => {
@@ -125,7 +124,7 @@ export class GoogleSheet {
 
     insertTo6 = async (record: any[]) => {
         try {
-            await this.sheet6?.addRow(record, { raw: true, insert: false })
+            await this.sheet5?.addRow(record, { raw: true, insert: false })
         } catch (error) {
             console.log("Error adding data to sheet ", error)
         }
